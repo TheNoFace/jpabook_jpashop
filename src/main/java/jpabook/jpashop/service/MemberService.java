@@ -29,7 +29,7 @@ public class MemberService {
    */
 
   // @RquiredArgsConstructor Annotation 사용하여 Lombok으로 생성
-  /* 
+  /*
    * // Constructor Injection
    * // @Autowired 자동으로 붙임
    * public MemberService(MemberRepository memberRepository) {
@@ -64,5 +64,12 @@ public class MemberService {
   // 회원 단일 조회
   public Member findOne(Long memberId) {
     return memberRepository.findOne(memberId);
+  }
+
+  // 회원 정보 수정
+  @Transactional
+  public void update(Long id, String name) {
+    Member member = memberRepository.findOne(id);
+    member.setName(name);
   }
 }
