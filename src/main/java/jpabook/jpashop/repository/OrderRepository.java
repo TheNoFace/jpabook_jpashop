@@ -1,4 +1,4 @@
-package jpabook.jpashop.domain.repository;
+package jpabook.jpashop.repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,40 +42,39 @@ public class OrderRepository {
   // // Querydsl
   // public List<Order> findAllDsl(OrderSearch orderSearch) {
 
-  //   QOrder order = QOrder.order;
-  //   QMember member = QMember.member;
+  // QOrder order = QOrder.order;
+  // QMember member = QMember.member;
 
-  //   return query.select(order)
-  //               .from(order)
-  //               .join(order.member, member)
-  //               .where(statusEq(orderSearch.getOrderStatus()),
-  //                      nameLike(orderSearch.getMemberName()))
-  //               .limit(1000)
-  //               .fetch();
+  // return query.select(order)
+  // .from(order)
+  // .join(order.member, member)
+  // .where(statusEq(orderSearch.getOrderStatus()),
+  // nameLike(orderSearch.getMemberName()))
+  // .limit(1000)
+  // .fetch();
   // }
-  
+
   // private BooleanExpression statusEq(OrderStatus orderStatus) {
-  //   if (orderStatus == null) {
-  //     return null;
-  //   }
-  //   return order.status.eq(orderStatus);
+  // if (orderStatus == null) {
+  // return null;
+  // }
+  // return order.status.eq(orderStatus);
   // }
 
   // private BooleanExpression nameLike(String nameCond) {
-  //   if (!StringUtils.hasText(nameCond)) {
-  //     return null;
-  //   }
-  //   return member.name.like(nameCond);
+  // if (!StringUtils.hasText(nameCond)) {
+  // return null;
+  // }
+  // return member.name.like(nameCond);
   // }
 
-  
   // JPA Criteria
   public List<Order> findAll(OrderSearch orderSearch) {
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Order> cq = cb.createQuery(Order.class);
     Root<Order> o = cq.from(Order.class);
-    Join<Order, Member> m = o.join("member", JoinType.INNER);  // Member 테이블과 Join
+    Join<Order, Member> m = o.join("member", JoinType.INNER); // Member 테이블과 Join
 
     List<Predicate> criteria = new ArrayList<>();
 
@@ -95,5 +94,27 @@ public class OrderRepository {
     TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
 
     return query.getResultList();
+  }
+
+  // fetch join: 주문 조회화면서 동시에 멤버 정보와 배달 정보를 fetch 후 join
+  public List<Order> findAllWithMemberDelivery() {
+    return em.createQuery("select o from Order o" +
+                          " join fetch o.member m" +
+                          " join fetch o.delivery d", Order.class)
+                          .getResultList();
+  }
+
+  // fetch join
+  // Order와 OrderItems join시 쿼리 결과가 Order 개수 * OrderItems 개수가 됨
+  // distinct 사용하여 중복 제거: DB 쿼리는 행의 모든 값이 동일해야 중복이 제거됨
+  // JPA 반환값에서만 중복 제거 
+  // - 근데 왜 distinct 없이도 중복이 제거되지?
+  public List<Order> findAllWithItem() {
+    return em.createQuery("select distinct o from Order o" + 
+                          " join fetch o.member m" + 
+                          " join fetch o.delivery d" + 
+                          " join fetch o.orderItems oi" + 
+                          " join fetch oi.item i", Order.class)
+                          .getResultList();
   }
 }

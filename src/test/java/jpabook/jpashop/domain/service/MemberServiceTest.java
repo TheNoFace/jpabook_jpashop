@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.domain.repository.MemberRepository;
+import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.service.MemberService;
 
 // @SpringJUnitConfig
