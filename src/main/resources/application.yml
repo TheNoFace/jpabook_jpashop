@@ -20,6 +20,8 @@ spring:
         # '[show_sql]': true
         '[format_sql]': true
         '[default_batch_fetch_size]': 100
+    # OSIV ON (기본값)
+    open-in-view: true
 
 logging:
   level:
